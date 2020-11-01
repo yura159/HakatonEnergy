@@ -50,9 +50,9 @@ namespace Energy
             ticks.Add(new Tick("Computer 3, Lamp 5, Freese 3", 0.8206));
             ticks.Add(new Tick("Computer 3, Lamp 5, Freese 3, Condition 1", 0.9106));
             ticks.Add(new Tick("Computer 2, Lamp 5, Freese 3, Condition 1", 0.9016));
-            ticks.Add(new Tick("Lamp 5, Freese 3, Condition 1", 0.8916));
-            ticks.Add(new Tick("Lamp 5, Freese 4, Condition 1", 1.0916));
-            ticks.Add(new Tick("Lamp 5, Freese 4, Condition 2", 1.2916));
+            ticks.Add(new Tick("Lamp 5, Freese 3, Condition 1", 0.8920));
+            ticks.Add(new Tick("Lamp 5, Freese 4, Condition 1", 1.0920));
+            ticks.Add(new Tick("Lamp 5, Freese 4, Condition 2", 1.2920));
         }
     }
 }

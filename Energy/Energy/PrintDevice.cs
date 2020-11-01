@@ -2,20 +2,53 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Energy
 {
-    public class PrintDevice
+    public class PrintDevice : Form
     {
+        private Dictionary<Type, Color> brush2 = Device.CreateBrush();
+        private bool isFirst = true;
+        private Dictionary<Type, Label> PrintNameDevice  = new Dictionary<Type, Label>();
 
-        private static Dictionary<Type, Color> brush2 = Device.CreateBrush();
+        public void CreateNameDevice(PaintEventArgs e, int xPos, string name)
+        {
+            var g = e.Graphics;
+            var yPos = 500;
+            var dy = 25;
+            var dx = 200;
+            foreach (var element in Manager.GetDevicesData())
+            {
+                g.FillRectangle(new SolidBrush(brush2[element.TypeDevice]), new Rectangle(xPos + dx, yPos, dx, dy));
 
-        public static Bitmap Draws(int width, int height, Form form, Label label,
-            Func<List<Device>, double> GetTarif, string name)
+                if (isFirst)
+                {
+                    var text = new Label();
+                    text.Location = new Point(xPos, yPos);
+                    text.Size = new Size(dx, dy);
+                    text.Font = new Font("Arial", 12);
+                    text.Text = element.TypeDevice.ToString() + " " + GetTarif(new List<Device> { element }).ToString() + " кВт⋅ч";
+                    this.Controls.Add(text);
+                    PrintNameDevice[element.TypeDevice] = text;
+
+                }
+                else
+                {
+                    var v = GetTarif(new List<Device> { element }).ToString();
+                    PrintNameDevice[element.TypeDevice].Text = element.TypeDevice.ToString() + " " +
+                        v.Substring(0, Math.Min(v.Length, 5)) + name;
+                }
+                yPos += dy;
+                if (yPos + 2 * dy >= this.Size.Height)
+                {
+                    yPos = 500;
+                    xPos += dx;
+                }
+            }
+            isFirst = false;
+        }
+        public Bitmap Draws(int width, int height, Form form, Label label, string name)
         {
             // Создаем новый образ и стираем фон
             Bitmap mybit = new Bitmap(width, height, PixelFormat.Format32bppArgb);
@@ -40,6 +73,10 @@ namespace Energy
             }
             label.Text = all.ToString().Substring(0, Math.Min(all.ToString().Length, 5)) + name;
             return mybit;
+        }
+        protected virtual double GetTarif(List<Device> devices)
+        {
+            return new EkonomikInfo(devices, DateTime.MinValue).StandartTarif;
         }
     }
 }

@@ -1,26 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using System.Drawing.Imaging;
 
 namespace Energy.Forms
 {
-    public partial class DataUsegeDevice : Form
+    public partial class DataUsegeDevice : PrintDevice
     {
         Label label = new Label();
-        private List<Device> printDevice;
-        private Dictionary<Type, Color> brush2;
         private bool isFullTrafic = true;
         private bool isDay;
-        private bool isFirst = true;
-        private Dictionary<Type, Label> PrintNameDevice;
 
         public DataUsegeDevice()
         {
@@ -31,13 +20,10 @@ namespace Energy.Forms
 
         private void Initiatialize()
         {
-            PrintNameDevice = new Dictionary<Type, Label>();
             if (!isDay)
                 this.BackColor = Color.FromArgb(62, 71, 88);
             this.Text = "Мой Дом";
             this.Size = new Size(1500, 750);
-            printDevice = Manager.GetDevicesData().ToList();
-            brush2 = Device.CreateBrush();
             label.TextAlign = ContentAlignment.MiddleCenter;
             label.Font = new Font("Arial", 22);
             label.Location = new Point(698, 248);
@@ -45,46 +31,7 @@ namespace Energy.Forms
             this.Controls.Add(label);
         }
 
-
-        private void CreateNameDevice(PaintEventArgs e)
-        {
-            var g = e.Graphics;
-            var yPos = 500;
-            var dy = 25;
-            var xPos = 600;
-            var dx = 200;
-            foreach (var element in printDevice)
-            {
-                g.FillRectangle(new SolidBrush(brush2[element.TypeDevice]), new Rectangle(xPos + dx, yPos, dx, dy));
-
-                if (isFirst)
-                {
-                    var text = new Label();
-                    text.Location = new Point(xPos, yPos);
-                    text.Size = new Size(dx, dy);
-                    text.Font = new Font("Arial", 12);
-                    text.Text = element.TypeDevice.ToString() + " " + GetTarif(new List<Device> { element }).ToString() + " кВт⋅ч";
-                    this.Controls.Add(text);
-                    PrintNameDevice[element.TypeDevice] = text;
-
-                }
-                else
-                {
-                    var v = GetTarif(new List<Device> { element }).ToString();
-                    PrintNameDevice[element.TypeDevice].Text = element.TypeDevice.ToString() + " " +
-                        v.Substring(0, Math.Min(v.Length, 5)) + " кВт⋅ч";
-                }
-                yPos += dy;
-                if (yPos + 2 * dy >= this.Size.Height)
-                {
-                    yPos = 500;
-                    xPos += dx;
-                }
-            }
-            isFirst = false;
-        }
-
-        private double GetTarif(List<Device> devices)
+        protected override double GetTarif(List<Device> devices)
         {
             var tarif = new EkonomikInfo(devices, DateTime.MinValue);
             if (isFullTrafic)
@@ -96,8 +43,8 @@ namespace Energy.Forms
 
         private void DataUsegeDevice_Paint(object sender, PaintEventArgs e)
         {
-            CreateNameDevice(e);
-            Bitmap myBitmap = PrintDevice.Draws(200, 200, this, label, GetTarif, " кВт*ч");
+            CreateNameDevice(e, 600, " кВт*ч");
+            Bitmap myBitmap = Draws(200, 200, this, label, " кВт*ч");
             Graphics g = e.Graphics; 
             g.DrawImage(myBitmap, 650, 200);
             g.FillEllipse(new SolidBrush(this.BackColor), 675, 225, 150, 150);
