@@ -15,7 +15,7 @@ namespace Energy
         Condition,
         DishWasher
     }
-  
+
     public class Device
     {   // содержит информацию о типе устройства
         public Diapazon diapazon;
@@ -24,7 +24,7 @@ namespace Energy
         public Type TypeDevice;
         public Color color;
 
-        
+
         List<Tuple<DateTime, double>> graf = new List<Tuple<DateTime, double>>();
 
         public void UpdateGraf()
@@ -37,6 +37,16 @@ namespace Energy
             return graf;
         }
 
+        public static Dictionary<Type, Color> CreateBrush()
+        {
+            var brush2 = new Dictionary<Type, Color>();
+            brush2[Type.Computer] = Color.Yellow;
+            brush2[Type.Condition] = Color.Red;
+            brush2[Type.DishWasher] = Color.Blue;
+            brush2[Type.Freese] = Color.Green;
+            brush2[Type.Lamp] = Color.Pink;
+            return brush2;
+        }
         public Device(Type type, int c)
         {
             TypeDevice = type;
@@ -46,7 +56,7 @@ namespace Energy
 
         public override bool Equals(object obj)
         {
-            if(obj is Device)
+            if (obj is Device)
             {
                 return TypeDevice == ((Device)obj).TypeDevice;
             }
